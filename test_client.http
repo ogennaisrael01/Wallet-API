@@ -1,0 +1,62 @@
+### GET request to example server
+GET http://127.0.0.1:8000/api/auth/profile/me/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczNzc1MDMxLCJpYXQiOjE3NzM3NzQ3MzEsImp0aSI6IjFiN2M0OTViYjRhYTRjNzU5OGNjMGJkMTZlZTRlZmE1IiwidXNlcl9pZCI6IjBiN2FhNmQyLWRjMjgtNDdmOS04ZGY5LTg5MWY4ZTZhZmM3MiIsImVtYWlsIjoidXNlcjJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6IlVzZXIyIn0.NBZZopl2EL6cBCLeFosTMQrhZ04XrF36fKX8abne2Zk
+
+
+###
+
+GET http://127.0.0.1:8000/api/wallet/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODUzMTMwLCJpYXQiOjE3NzM4NTAxMzAsImp0aSI6IjA2YjBmMDA2NWI3ZTRiMTg4MjUyYzE5NTI3OGEzZDFhIiwidXNlcl9pZCI6IjZlZDJmN2QzLTQ2YzItNDg5Zi05MjFiLWRlZmI3ZWIwZDgzNSIsImVtYWlsIjoidXNlcjAyQGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJVc2VyMDAwMiJ9.Li0RztKcuB2i7MZB34uCULjI6Aclv-zkPcmiaqQljZ0
+###
+
+POST http://127.0.0.1:8000/api/deposit/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODI0NzQ3LCJpYXQiOjE3NzM4MjQ0NDcsImp0aSI6IjViZTIzMjQzZTAxOTQ0Mzc5OThmMGZlNTY5ZDQwNDBkIiwidXNlcl9pZCI6IjZjNzFkNGZmLTVkNjktNGMzMC04NTcwLTZmZjU2ZmEwMzNhYSIsImVtYWlsIjoidXNlcjAzQGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJVc2VyMDAzIn0.dALtMnHzDJUJkzZWp0hDMw5tbHhDUGW4UCZkOounvPU
+
+{
+  "amount": 300,
+  "idempotency_key": "idempotency_key___038449393"
+}
+
+###
+GET http://127.0.0.1:8000/api/verify_payment/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODMxNDY5LCJpYXQiOjE3NzM4MzExNjksImp0aSI6IjQ3OGIzODE4NmQzZDRmZTQ5YWYzNTcxMmI2ZTAwNjEzIiwidXNlcl9pZCI6IjZjNzFkNGZmLTVkNjktNGMzMC04NTcwLTZmZjU2ZmEwMzNhYSIsImVtYWlsIjoidXNlcjAzQGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJVc2VyMDAzIn0.3SFo8mBkifW_F-j60GVsorkozMvFi93UCg9KolowS5Q
+
+{
+  "payment_reference": "bEBD2c1C8A9f536F"
+}
+
+###
+POST http://127.0.0.1:8000/api/set_transaction_pin/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODUwNjk1LCJpYXQiOjE3NzM4NDc2OTUsImp0aSI6IjA5NDAwZDQ4ODA0ZTQyNTZhMDRlM2NkMzRhNTg4YzRmIiwidXNlcl9pZCI6IjQ3YWU4ZjA2LWQxOTQtNDk5OC1iYTI0LTA5MzRjYTVhNzM0ZCJ9.Ht-_GBV06sgRpOsIUrCuhwDYczxyHC-xhwBKlKS83Jw
+
+{
+  "pin": "0303",
+  "confirm_pin": "0303"
+}
+
+###
+POST http://127.0.0.1:8000/api/transfer/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODUwNjk1LCJpYXQiOjE3NzM4NDc2OTUsImp0aSI6IjA5NDAwZDQ4ODA0ZTQyNTZhMDRlM2NkMzRhNTg4YzRmIiwidXNlcl9pZCI6IjQ3YWU4ZjA2LWQxOTQtNDk5OC1iYTI0LTA5MzRjYTVhNzM0ZCJ9.Ht-_GBV06sgRpOsIUrCuhwDYczxyHC-xhwBKlKS83Jw
+
+{
+  "amount": 200,
+  "account_number": "5819109103",
+  "transaction_pin": "0303",
+  "idempotency_key": "idempotency_0003eek33"
+
+}
+
+###
+POST http://127.0.0.1:8000/api/verify_transfer/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODUwNjk1LCJpYXQiOjE3NzM4NDc2OTUsImp0aSI6IjA5NDAwZDQ4ODA0ZTQyNTZhMDRlM2NkMzRhNTg4YzRmIiwidXNlcl9pZCI6IjQ3YWU4ZjA2LWQxOTQtNDk5OC1iYTI0LTA5MzRjYTVhNzM0ZCJ9.Ht-_GBV06sgRpOsIUrCuhwDYczxyHC-xhwBKlKS83Jw
+
+{
+  "payment_reference": "E823517bCeAfadF4"
+}

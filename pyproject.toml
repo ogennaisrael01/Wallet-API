@@ -4,5 +4,16 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.13"
 dependencies = [
+    "bcrypt>=5.0.0",
     "django>=6.0.3",
+    "django-environ>=0.13.0",
+    "django-filter>=25.2",
+    "django-rest-framework>=0.1.0",
+    "djangorestframework>=3.16.1",
+    "djangorestframework-simplejwt>=5.5.1",
+    "drf-yasg>=1.21.15",
+    "requests>=2.32.5",
+    "validator>=0.7.1",
+    "validators>=0.35.0",
+    "whitenoise>=6.12.0",
 ]
