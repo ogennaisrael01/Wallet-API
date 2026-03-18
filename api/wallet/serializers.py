@@ -1,12 +1,13 @@
-from django.template.defaulttags import NowNode
-from rest_framework import serializers
 
-from .models import UserWallet, AccountNumber, WalletTransaction, TransferPin, Transfer
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
+from .models import UserWallet, AccountNumber, WalletTransaction, TransferPin, Transfer, Withdraw
 from ..users.serializers import UserSerializer
 from .services.payment.utils import generate_payment_reference
 from .services.wallet_service import WalletService, verify_user_account_number, verify_user_transfer_pin, verify_amount
 from .services.payment.payment import PaymentService
-from .services.utils import get_calculated_amount
+from .services.utils import get_calculated_amount, get_or_none
 
 
 class AccountNumberSerializer(serializers.ModelSerializer):
@@ -311,7 +312,7 @@ class TransferVerifySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         reference = validated_data['payment_reference']
-        transfer_data = WalletService().fetch_transfer_by_reference(reference=reference)
+        transfer_data = WalletService().fetch_model_by_reference(model=Transfer, reference=reference)
 
         transaction_verification = WalletService().verify_transaction(
             reference=reference, paystack_data=transfer_data)
@@ -339,10 +340,145 @@ class TransferVerifySerializer(serializers.ModelSerializer):
 
         return transaction
 
+class WithDrawSerializer(serializers.Serializer):
+    account_number = serializers.CharField(write_only=True, required=True)
+    bank_name = serializers.CharField(write_only=True, required=True)
+    bank_code = serializers.CharField(write_only=True, required=True)
+    account_name = serializers.CharField(write_only=True, required=True)
+    idempotency_key = serializers.CharField(write_only=True, required=True)
+    amount = serializers.DecimalField(decimal_places=2, max_digits=8, write_only=True, required=True)
+    transaction_pin = serializers.CharField(write_only=True, required=True)
+
+    transaction = 'withdraw'
+
+    def validate_amount(self, value):
+        user = self.context['request'].user
+        amount_is_valid = verify_amount(user, value)
+        if not amount_is_valid['status']:
+            raise serializers.ValidationError(amount_is_valid['message'])
+        if value < 100:
+            raise serializers.ValidationError("amount can't be less that 100")
+        return value
+
+    def validate_transaction_pin(self, value):
+        TransactionPinSerializer().is_digits_validator(value)
+        TransactionPinSerializer().length_validator(value)
+
+        user = self.context['request'].user
+
+        validated_user_pin = verify_user_transfer_pin(user, value)
+        if not validated_user_pin['status']:
+            raise serializers.ValidationError(validated_user_pin['message'])
+
+        return value
+
+    def validate_account_number(self, value):
+        TransactionPinSerializer().is_digits_validator(value)
+        if len(value) < 10 or len(value) > 10:
+            raise serializers.ValidationError("account number must be equal 10 digits")
+
+        return value
+
+    def validate_account_name(self, value):
+        if not isinstance(value, str):
+            raise serializers.ValidationError("account name is invalid")
+
+        return value.strip()
+
+    def validate_bank_code(self, value):
+        TransactionPinSerializer().is_digits_validator(value)
+        return value
+
+    def validate_bank_name(self, value):
+        self.validate_account_name(value)
+        return value
+
+    def validate_idempotency_key(self, value):
+        self.validate_account_name(value)
+        return value
 
 
+    def create(self, validated_data):
 
+        payment_reference = generate_payment_reference()
+        idempotency_key = validated_data['idempotency_key']
+        amount = validated_data['amount'] * 100
+        account_number = validated_data['account_number']
+        account_name = validated_data['account_name']
+        bank_name = validated_data['bank_name']
+        bank_code = validated_data['bank_code']
 
+        current_user = self.context['request'].user
 
+        user_wallet = current_user.wallet
+        withdrawal = WalletService().create_withdrawal(
+            amount=amount, account_number=account_number,
+            account_name=account_name, bank_code=bank_code,
+            bank_name=bank_name, wallet=user_wallet, reference=payment_reference
+        )
+        withdrawal.status = Withdraw.WithDrawStatus.PROCESSING
+        withdrawal.save(update_fields=('status',))
 
+        # create transaction
+        transaction = WalletService().create_transaction(
+            user=current_user, wallet=user_wallet, reference=payment_reference,
+            amount=amount, idempotency_key=idempotency_key,
+            transaction_type=WalletTransaction.TransactionType.WITHDRAW
+        )
+        if transaction is None:
+            raise serializers.ValidationError("no transaction found")
 
+        if transaction and transaction.status != WalletTransaction.TransactionStatus.PROCESSING:
+            transaction.status = WalletTransaction.TransactionStatus.PROCESSING
+            transaction.save(update_fields=("status",))
+
+        return validated_data
+
+class WithDrawApprovalSerializer(serializers.Serializer):
+    reference = serializers.CharField(write_only=True, required=True)
+    user_id = serializers.UUIDField(write_only=True, required=True)
+
+    def validate_reference(self, value):
+        if not isinstance(value, str):
+            raise serializers.ValidationError("reference is invalid")
+        return value
+
+    def create(self, validated_data):
+        reference = validated_data['reference']
+        user_id = validated_data['user_id']
+
+        from django.contrib.auth import get_user_model
+        UserModel = get_user_model()
+
+        user_instance = get_or_none(UserModel, pk=user_id)
+        withdraw = Withdraw.objects.get(reference=reference)
+
+        if user_instance is None:
+            raise serializers.ValidationError("user does not exist")
+
+        if user_instance != withdraw.user_wallet.owner:
+            raise ValidationError("This user is not the owner of this transaction")
+
+        withdraw_data = WalletService().fetch_model_by_reference(model=Withdraw, reference=reference)
+
+        transaction_verification = WalletService().verify_transaction(
+            reference=reference, paystack_data=withdraw_data)
+
+        if not transaction_verification['status']:
+            raise serializers.ValidationError(transaction_verification['message'])
+
+        withdraw = None
+        try:
+            transaction = transaction_verification['transaction']
+            withdraw.status = transaction.status
+        except Exception as exc:
+            raise serializers.ValidationError(str(exc))
+
+        if withdraw.status == Transfer.TransferStatus.SUCCESS:
+            # debit sender and credit account
+            sender_wallet = withdraw.user_wallet
+            amount = withdraw.amount
+            WalletService().decrement_user_wallet(user_wallet=sender_wallet, amount=amount)
+
+            # figure a way to send user money
+        return transaction

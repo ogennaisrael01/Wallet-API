@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from .models import UserWallet
 from .permissions import IsWalletOwner
 from .serializers import WalletSerializer, DepositSerializer, PaymentVerifySerializer, TransactionSerializer, \
-    TransactionPinSerializer, TransferSerializer, TransferVerifySerializer
+    TransactionPinSerializer, TransferSerializer, TransferVerifySerializer, WithDrawSerializer, \
+    WithDrawApprovalSerializer
 
 
 class WalletViewSet(viewsets.GenericViewSet):
@@ -23,7 +24,33 @@ class WalletViewSet(viewsets.GenericViewSet):
             return TransferSerializer
         elif self.action == "verify_transfer":
             return  TransferVerifySerializer
+        elif self.action == 'withdraw':
+            return WithDrawSerializer
+        elif self.action == 'approve':
+            return WithDrawApprovalSerializer
         return None
+
+    def get_permissions(self):
+        if self.action == 'approve':
+            return [permissions.IsAdminUser()]
+        return [IsWalletOwner()]
+
+    @action(methods=['post'], detail=False)
+    def approve(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+
+        output_serializer = serializer.save()
+
+        return Response(TransactionSerializer(output_serializer).data, status=status.HTTP_200_OK)
+
+
+    @action(methods=['post'], detail=False)
+    def withdraw(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], detail=False)
     def verify_transfer(self, request, *args, **kwargs):

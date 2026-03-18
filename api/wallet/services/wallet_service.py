@@ -5,7 +5,10 @@ from django.utils import timezone
 
 from .utils import hash_account_number, verify_hashed_account
 from .payment.utils import get_data
-from ..models import AccountNumber, UserWallet, WalletTransaction, TransferPin, Transfer
+from ..models import (
+    AccountNumber, UserWallet, WalletTransaction,
+    TransferPin, Transfer, Withdraw
+)
 
 import logging
 
@@ -27,7 +30,7 @@ def verify_user_transfer_pin(user, pin):
         raise ValueError("user instance must be present")
     try:
         transfer_pin = TransferPin.objects.get(owner=user, pin=pin)
-    except TransferPin.DoesNotExists:
+    except TransferPin.DoesNotExist:
         return {"status": False, "message": "pin not found, invalid"}
     if not verify_hashed_account(pin, transfer_pin.hashed_pin):
         return {"status": False, "message": "invalid pin"}
@@ -253,19 +256,45 @@ class WalletService:
             raise Exception(e)
         return user_transaction_pin
 
-    def fetch_transfer_by_reference(self, reference):
 
+    @transaction.atomic
+    def create_withdrawal(self, amount, account_name, bank_code, account_number, bank_name, reference, wallet):
+        if amount is None or reference is None:
+            raise ValueError("core withdrawal fields cannot be empty (amount, reference)")
+
+        if wallet is None:
+            raise ValueError("user wallet must be present")
+
+        try:
+
+            withdraw = Withdraw.objects.create(
+                user_wallet=wallet, amount=amount,
+                account_name=account_name, bank_code=bank_code,
+                account_number=account_number, bank_name=bank_name,
+                reference=reference
+            )
+
+            logger.info("withdrawal request made")
+
+        except Exception as e:
+            logger.error(e)
+            raise Exception(e)
+        return withdraw
+
+    def fetch_model_by_reference(self, model, reference):
         if reference is None:
             raise ValueError("payment reference must be present")
 
         try:
-            transfer = Transfer.objects.get(reference=reference)
-        except Transfer.DoesNotExist:
+            instance = model.objects.get(reference=reference)
+        except model.DoesNotExist:
             return get_data(status=False, message="Transfer does not exist", amount=0.00)
 
-        if self.already_failed(transfer):
-            return get_data(status=False, message="transfer failed and closed", amount=transfer.amount)
+        if self.already_failed(instance):
+            return get_data(status=False, message="transfer failed and closed", amount=instance.amount)
 
-        if self.already_succeeded(transfer):
-            return get_data(status=False, message="transfer passed and closed", amount=transfer.amount)
-        return  get_data(status=True, message="Transfer verified", amount=transfer.amount)
+        if self.already_succeeded(instance):
+            return get_data(status=False, message="transfer passed and closed", amount=instance.amount)
+        return  get_data(status=True, message="Transfer verified", amount=instance.amount)
+
+

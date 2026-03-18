@@ -60,3 +60,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiY
 {
   "payment_reference": "E823517bCeAfadF4"
 }
+
+###
+POST http://127.0.0.1:8000/api/withdraw/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODY5MTQ1LCJpYXQiOjE3NzM4NjYxNDUsImp0aSI6ImFmYzg5M2UzMTM1YjQxNzBiZDI2ZDU2YWNiMjYxM2RiIiwidXNlcl9pZCI6IjQ3YWU4ZjA2LWQxOTQtNDk5OC1iYTI0LTA5MzRjYTVhNzM0ZCIsImVtYWlsIjoidXNlcjAxQGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJVc2VyMDAxIn0.Byd_TE1SYxkZ13_VYJiErurnbfcO8Osv290jenVRIWU
+
+{
+  "account_number": "0948479383",
+  "bank_name": "opay",
+  "bank_code": "09484",
+  "account_name": "user002",
+  "idempotency_key": "idemp_93oeie",
+  "amount": "150",
+  "transaction_pin": "0303"
+
+}

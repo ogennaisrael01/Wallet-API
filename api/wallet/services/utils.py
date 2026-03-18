@@ -34,5 +34,11 @@ def verify_hashed_account(number, hashed_account_number) -> bool:
 def get_calculated_amount(amount):
     return amount / 100
 
+def get_or_none(model, **kwargs):
+    try:
+        instance = model.objects.get(**kwargs)
+    except model.DoesNotExist:
+        return None
 
+    return instance
 

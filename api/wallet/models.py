@@ -128,6 +128,44 @@ class Transfer(models.Model):
             models.Index(fields=("created_at",))
         ]
 
+class Withdraw(models.Model):
+
+    class WithDrawStatus(models.TextChoices):
+        PROCESSING = 'Processing'
+        PENDING = 'Pending'
+        FAILED = 'Failed'
+        SUCCESS = 'Success'
+
+    withdraw_id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False, db_index=True)
+    amount = models.DecimalField(decimal_places=2, max_digits=8, default=0)
+
+    status = models.CharField(max_length=50, choices=WithDrawStatus.choices, default=WithDrawStatus.PENDING)
+    user_wallet = models.ForeignKey(UserWallet, on_delete=models.CASCADE, related_name='withdraws')
+
+    account_name = models.CharField(max_length=255, null=True)
+    bank_code = models.CharField(max_length=50)
+    account_number = models.CharField(max_length=50)
+    bank_name = models.CharField(max_length=255)
+
+    reference = models.CharField(max_length=50)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"withdraw {self.user_wallet.owner.get_display_name()} -> {self.bank_name}"
+
+    class Meta:
+        verbose_name = _("Withdraw")
+        verbose_name_plural = _("withdrawals")
+
+        indexes = [
+            models.Index(fields=("reference",)),
+            models.Index(fields=("amount",)),
+            models.Index(fields=("status",)),
+            models.Index(fields=("created_at",))
+        ]
+
 
 class WalletTransaction(models.Model):
     transaction_id = models.UUIDField(
