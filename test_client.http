@@ -1,37 +1,59 @@
+###
+POST http://127.0.0.1:8000/api/auth/register/
+Content-Type: application/json
+
+{
+  "email": "ogennaisrael@gmail.com",
+  "username": "Ogenna01",
+  "password": "0987poiu",
+  "password_confirm": "0987poiu"
+}
+
+###
+POST http://127.0.0.1:8000/api/auth/login/
+Content-Type: application/json
+
+{
+  "email": "ogennaisrael@gmail.com",
+  "password": "0987poiu"
+}
+
+
 ### GET request to example server
 GET http://127.0.0.1:8000/api/auth/profile/me/
 Content-Type: application/json
-Authorization: Bearer e...
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODgwMTIxLCJpYXQiOjE3NzM4NzcxMjEsImp0aSI6IjY2YzRiZjcwYWJhMjRlYWFiMTAzYzc4YjQzYjZjNTIzIiwidXNlcl9pZCI6ImQxY2QwYWMzLTM2MDctNGQyZC04MTVkLTRjNTcwMjVmNGYzYSIsImVtYWlsIjoib2dlbm5haXNyYWVsQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiT2dlbm5hMDEifQ.2j2hn0o9H_c3gKsOy9BcEjXEJBy-3cGOrFWTpqdIBAM
+
 
 ###
-
 GET http://127.0.0.1:8000/api/wallet/
 Content-Type: application/json
-Authorization: Bearer Bearer ..
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODgwMTIxLCJpYXQiOjE3NzM4NzcxMjEsImp0aSI6IjY2YzRiZjcwYWJhMjRlYWFiMTAzYzc4YjQzYjZjNTIzIiwidXNlcl9pZCI6ImQxY2QwYWMzLTM2MDctNGQyZC04MTVkLTRjNTcwMjVmNGYzYSIsImVtYWlsIjoib2dlbm5haXNyYWVsQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiT2dlbm5hMDEifQ.2j2hn0o9H_c3gKsOy9BcEjXEJBy-3cGOrFWTpqdIBAM
+
 ###
 
 POST http://127.0.0.1:8000/api/deposit/
 Content-Type: application/json
-Authorization: Bearer ...
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODgwMTIxLCJpYXQiOjE3NzM4NzcxMjEsImp0aSI6IjY2YzRiZjcwYWJhMjRlYWFiMTAzYzc4YjQzYjZjNTIzIiwidXNlcl9pZCI6ImQxY2QwYWMzLTM2MDctNGQyZC04MTVkLTRjNTcwMjVmNGYzYSIsImVtYWlsIjoib2dlbm5haXNyYWVsQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiT2dlbm5hMDEifQ.2j2hn0o9H_c3gKsOy9BcEjXEJBy-3cGOrFWTpqdIBAM
 
 {
   "amount": 300,
-  "idempotency_key": "idempotency_key___038449393"
+  "idempotency_key": "idempotency_key___038"
 }
 
 ###
-GET http://127.0.0.1:8000/api/verify_payment/
+POST http://127.0.0.1:8000/api/verify_deposit/
 Content-Type: application/json
-Authorization: Bearer ...
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODc4NTk3LCJpYXQiOjE3NzM4NzU1OTcsImp0aSI6ImIxMjNiOWEyMzMwYTQzNjg4OGVlYzQyNzIzYjg0ODQ5IiwidXNlcl9pZCI6ImQxY2QwYWMzLTM2MDctNGQyZC04MTVkLTRjNTcwMjVmNGYzYSIsImVtYWlsIjoib2dlbm5haXNyYWVsQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiT2dlbm5hMDEifQ.qzQfHlGuOQZFaMfj_C3fvbalVAyCSdlppP1Efmmacms
 
 {
-  "payment_reference": "bEBD2c1C8A9f536F"
+  "payment_reference": "fE3dFcDa670924eA"
 }
 
 ###
 POST http://127.0.0.1:8000/api/set_transaction_pin/
 Content-Type: application/json
-Authorization: Bearer ..
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzczODc4NTk3LCJpYXQiOjE3NzM4NzU1OTcsImp0aSI6ImIxMjNiOWEyMzMwYTQzNjg4OGVlYzQyNzIzYjg0ODQ5IiwidXNlcl9pZCI6ImQxY2QwYWMzLTM2MDctNGQyZC04MTVkLTRjNTcwMjVmNGYzYSIsImVtYWlsIjoib2dlbm5haXNyYWVsQGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiT2dlbm5hMDEifQ.qzQfHlGuOQZFaMfj_C3fvbalVAyCSdlppP1Efmmacms
 
 {
   "pin": "0303",
@@ -70,7 +92,7 @@ Authorization: Bearer ey..
   "bank_name": "opay",
   "bank_code": "09484",
   "account_name": "user002",
-  "idempotency_key": "idemp_93oeie",
+  "idempotency_key": "idempotency_key",
   "amount": "150",
   "transaction_pin": "0303"
 

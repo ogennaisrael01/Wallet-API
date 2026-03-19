@@ -59,7 +59,6 @@ class PaymentService:
         self.get_headers().pop("Content-Type")
         headers = self.get_headers()
         url = PaymentService().PAYSTACK_VERIFY_PAYMENT + reference
-        print(headers)
 
         try:
             response = requests.get(url, headers=headers)

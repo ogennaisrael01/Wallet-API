@@ -14,7 +14,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SIMPLE_JWT = {
     # Token Lifetimes
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=env.int("JWT_ACCESS_TOKEN_LIFETIME", default=5)),
+        minutes=env.int("JWT_ACCESS_TOKEN_LIFETIME", default=50)),
     "REFRESH_TOKEN_LIFETIME": timedelta(
         days=env.int("JWT_REFRESH_TOKEN_LIFETIME", default=7)
     ),

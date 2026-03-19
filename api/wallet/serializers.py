@@ -52,7 +52,6 @@ class DepositSerializer(serializers.Serializer):
     transaction = "deposit"
 
     def validate_amount(self, value):
-
         if not isinstance(value, int):
             raise serializers.ValidationError("amount can only be int")
         if value < 100:
@@ -107,7 +106,6 @@ class PaymentVerifySerializer(serializers.Serializer):
             raise serializers.ValidationError("payment reference is invalid")
         return value.strip()
 
-
     def create(self, validated_data):
         user = self.context['request'].user
 
@@ -120,7 +118,7 @@ class PaymentVerifySerializer(serializers.Serializer):
         if not transaction_verification['status']:
             raise serializers.ValidationError(transaction_verification['message'])
 
-        update_wallet = WalletService().increment_user_wallet(user, paystack_service['data']['amount'])
+        update_wallet = WalletService().increment_user_wallet(user_wallet=user.wallet, amount=paystack_service['data']['amount'])
 
         return transaction_verification['transaction']
 
